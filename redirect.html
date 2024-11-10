@@ -54,7 +54,7 @@
 
                 // If the app isn't installed, fallback to the browser
                 setTimeout(function () {
-                    if (Date.now() - startTime < 1000) {
+                    if (Date.now() - startTime < 10000) {
                         window.location = fallbackLink; // Open in browser if app fails to open
                     }
                 }, 500);
