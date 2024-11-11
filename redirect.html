@@ -79,10 +79,10 @@
 
                 // If the app isn't installed, fallback to the browser
                 setTimeout(function () {
-                    if (Date.now() - startTime < 5000) {
+                    if (Date.now() - startTime < 1000) {
                         window.location = fallbackLink; // Open in browser if app fails to open
                     }
-                }, 5000);
+                }, 1000);
             } else {
                 // If not on mobile, open in the browser
                 window.location = youtubeUrl;
