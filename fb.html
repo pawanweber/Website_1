@@ -19,14 +19,14 @@
         function getFacebookContentType(url) {
             // Regex patterns to match different Facebook URL formats
             const videoRegex = /(?:https?:\/\/(?:www\.)?facebook\.com\/(?:[^\/]+)\/videos\/(\d+))/;
-            const reelRegex = /(?:https?:\/\/(?:www\.)?facebook\.com\/reel\/([a-zA-Z0-9_-]+))/;
+            const reelRegex = /(?:https?:\/\/(?:www\.)?facebook\.com\/share\/r\/([a-zA-Z0-9_-]+)\/)/; // Updated for your reel URL format
             const postRegex = /(?:https?:\/\/(?:www\.)?facebook\.com\/(?:[^\/]+)\/posts\/(\d+))/;
 
             // Check for video
             if (videoRegex.test(url)) {
                 return { type: 'video', url: url.match(videoRegex)[0], id: url.match(videoRegex)[1] };
             }
-            // Check for reel
+            // Check for reel (updated to match your URL format)
             else if (reelRegex.test(url)) {
                 return { type: 'reel', url: url.match(reelRegex)[0], id: url.match(reelRegex)[1] };
             }
@@ -64,7 +64,7 @@
                 if (content.type === 'video') {
                     deepLink = `fb://video/${content.id}`;
                 } else if (content.type === 'reel') {
-                    deepLink = `fb://reel/${content.id}`;
+                    deepLink = `fb://reel/${content.id}`; // Reels are now matched and deep link generated
                 } else if (content.type === 'post') {
                     deepLink = `fb://post/${content.id}`;
                 }
