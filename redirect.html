@@ -15,11 +15,27 @@
             return urlParams.get(name);
         }
 
-        // Function to extract the YouTube channel ID from a YouTube URL
-        function getChannelId(url) {
-            const regex = /(?:https?:\/\/(?:www\.)?youtube\.com\/(?:channel\/|c\/|user\/))([\w\-]+)/;
-            const match = url.match(regex);
-            return match ? match[1] : null;
+        // Function to determine the type of the YouTube URL: Channel, Video, Shorts, or Live
+        function getYouTubeContentType(url) {
+            const channelRegex = /(?:https?:\/\/(?:www\.)?youtube\.com\/(?:channel|c|user)\/([\w\-]+))/;
+            const videoRegex = /(?:https?:\/\/(?:www\.)?youtube\.com\/(?:watch\?v=|shorts\/)([\w\-]+))/;
+            const liveRegex = /(?:https?:\/\/(?:www\.)?youtube\.com\/(?:watch\?v=|live\/)([\w\-]+))/;
+
+            // Check for channel
+            if (channelRegex.test(url)) {
+                return { type: 'channel', url: url.match(channelRegex)[0], id: url.match(channelRegex)[1] };
+            }
+            // Check for video or shorts
+            else if (videoRegex.test(url)) {
+                return { type: 'video', url: url.match(videoRegex)[0], id: url.match(videoRegex)[1] };
+            }
+            // Check for live stream
+            else if (liveRegex.test(url)) {
+                return { type: 'live', url: url.match(liveRegex)[0], id: url.match(liveRegex)[1] };
+            } 
+            else {
+                return null; // URL type not recognized
+            }
         }
 
         // Function to handle the redirection to the YouTube app or fallback to the browser
@@ -30,9 +46,10 @@
                 return;
             }
 
-            const channelId = getChannelId(youtubeUrl);
-            if (!channelId) {
-                alert("Invalid YouTube channel URL.");
+            // Get YouTube content type (channel, video, shorts, live, etc.)
+            const content = getYouTubeContentType(youtubeUrl);
+            if (!content) {
+                alert("Invalid YouTube URL.");
                 return;
             }
 
@@ -40,11 +57,19 @@
             const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // Construct the deep link for the YouTube channel
-                const deepLink = `vnd.youtube://channel/${channelId}`;
+                let deepLink;
+                
+                // Construct deep link for different YouTube content types
+                if (content.type === 'channel') {
+                    deepLink = `vnd.youtube://channel/${content.id}`;
+                } else if (content.type === 'video') {
+                    deepLink = `vnd.youtube://watch?v=${content.id}`;
+                } else if (content.type === 'live') {
+                    deepLink = `vnd.youtube://watch?v=${content.id}`; // Live streams use the same format as videos
+                }
 
                 // Fallback to the browser URL
-                const fallbackLink = youtubeUrl;
+                const fallbackLink = content.url;
 
                 // Track how long the redirection takes
                 const startTime = Date.now();
